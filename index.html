@@ -117,15 +117,48 @@
             Вернитесь в Telegram бот - подписка уже активна!
         </div>
         
-        <button class="close-btn" onclick="window.close()">Закрыть</button>
+        <button class="close-btn" id="backBtn">Вернуться назад</button>
         
-        <div class="auto-close">
-            Страница закроется автоматически через <span id="countdown">5</span> секунд
+        <div class="auto-close" id="autoCloseInfo">
+            Автоматический возврат через <span id="countdown">5</span> секунд
         </div>
     </div>
     
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <script>
-        // Автоматическое закрытие через 5 секунд
+        // Функция для возврата назад
+        function goBack() {
+            // Сначала пытаемся закрыть через Telegram Web App
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    window.Telegram.WebApp.close();
+                    return;
+                } catch (e) {
+                    console.log('Не удалось закрыть через Telegram WebApp');
+                }
+            }
+            
+            // Пытаемся вернуться назад в истории
+            if (window.history.length > 1) {
+                window.history.back();
+            } else if (window.opener) {
+                // Если открыто в popup, закрываем
+                window.close();
+            } else {
+                // Если не можем вернуться, показываем инструкцию
+                document.getElementById('autoCloseInfo').innerHTML = 
+                    '<strong style="color: #667eea;">✅ Оплата успешна!</strong><br>' +
+                    'Закройте это окно и вернитесь в Telegram бот';
+                document.getElementById('backBtn').style.display = 'none';
+            }
+        }
+        
+        // Обработчик кнопки "Вернуться назад"
+        document.getElementById('backBtn').addEventListener('click', goBack);
+        
+        // Автоматический возврат через 5 секунд
         let countdown = 5;
         const countdownEl = document.getElementById('countdown');
         
@@ -135,24 +168,15 @@
             
             if (countdown <= 0) {
                 clearInterval(timer);
-                // Пытаемся закрыть окно
-                if (window.opener) {
-                    window.close();
-                } else {
-                    // Если не можем закрыть, показываем сообщение
-                    document.querySelector('.auto-close').textContent = 'Вы можете закрыть это окно вручную';
-                }
+                goBack();
             }
         }, 1000);
         
-        // Также закрываем при клике вне контейнера
-        document.body.addEventListener('click', function(e) {
-            if (e.target === document.body) {
-                if (window.opener) {
-                    window.close();
-                }
-            }
-        });
+        // Инициализация Telegram Web App (если доступно)
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
     </script>
 </body>
 </html>
