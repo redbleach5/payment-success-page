@@ -117,10 +117,12 @@
             Вернитесь в Telegram бот - подписка уже активна!
         </div>
         
-        <button class="close-btn" id="backBtn">Вернуться назад</button>
-        
-        <div class="auto-close" id="autoCloseInfo">
-            Автоматический возврат через <span id="countdown">5</span> секунд
+        <div class="auto-close" style="margin-top: 24px; padding: 16px; background: #f0f9ff; border-radius: 12px; border: 2px solid #0ea5e9;">
+            <strong style="color: #0369a1; display: block; margin-bottom: 8px;">📱 Что делать дальше?</strong>
+            <p style="color: #0369a1; margin: 0; font-size: 14px; line-height: 1.5;">
+                Закройте это окно (нажмите кнопку "Назад" в браузере)<br>
+                и вернитесь в Telegram бот - подписка уже активна! ✅
+            </p>
         </div>
     </div>
     
@@ -128,54 +130,24 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <script>
-        // Функция для возврата назад
-        function goBack() {
-            // Сначала пытаемся закрыть через Telegram Web App
-            if (window.Telegram && window.Telegram.WebApp) {
-                try {
-                    window.Telegram.WebApp.close();
-                    return;
-                } catch (e) {
-                    console.log('Не удалось закрыть через Telegram WebApp');
-                }
-            }
-            
-            // Пытаемся вернуться назад в истории
-            if (window.history.length > 1) {
-                window.history.back();
-            } else if (window.opener) {
-                // Если открыто в popup, закрываем
-                window.close();
-            } else {
-                // Если не можем вернуться, показываем инструкцию
-                document.getElementById('autoCloseInfo').innerHTML = 
-                    '<strong style="color: #667eea;">✅ Оплата успешна!</strong><br>' +
-                    'Закройте это окно и вернитесь в Telegram бот';
-                document.getElementById('backBtn').style.display = 'none';
-            }
-        }
-        
-        // Обработчик кнопки "Вернуться назад"
-        document.getElementById('backBtn').addEventListener('click', goBack);
-        
-        // Автоматический возврат через 5 секунд
-        let countdown = 5;
-        const countdownEl = document.getElementById('countdown');
-        
-        const timer = setInterval(() => {
-            countdown--;
-            countdownEl.textContent = countdown;
-            
-            if (countdown <= 0) {
-                clearInterval(timer);
-                goBack();
-            }
-        }, 1000);
-        
-        // Инициализация Telegram Web App (если доступно)
+        // Пытаемся закрыть только если это Telegram Web App
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
+            
+            // В Telegram Web App можно закрыть автоматически
+            setTimeout(() => {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    try {
+                        window.Telegram.WebApp.close();
+                    } catch (e) {
+                        // Игнорируем ошибку
+                    }
+                }
+            }, 3000);
+        } else {
+            // Если не Web App, просто показываем инструкцию
+            // (уже показана в HTML выше)
         }
     </script>
 </body>
