@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата успешна</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: scaleIn 0.5s ease-out;
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+        
+        h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        
+        p {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        
+        .message {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            color: #0369a1;
+            font-size: 16px;
+        }
+        
+        .close-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 24px;
+        }
+        
+        .close-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .auto-close {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✅</div>
+        <h1>Оплата успешно завершена!</h1>
+        <p>Спасибо за вашу покупку. Ваша подписка активирована.</p>
+        
+        <div class="message">
+            <strong>💡 Что дальше?</strong><br>
+            Вернитесь в Telegram бот - подписка уже активна!
+        </div>
+        
+        <button class="close-btn" onclick="window.close()">Закрыть</button>
+        
+        <div class="auto-close">
+            Страница закроется автоматически через <span id="countdown">5</span> секунд
+        </div>
+    </div>
+    
+    <script>
+        // Автоматическое закрытие через 5 секунд
+        let countdown = 5;
+        const countdownEl = document.getElementById('countdown');
+        
+        const timer = setInterval(() => {
+            countdown--;
+            countdownEl.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                // Пытаемся закрыть окно
+                if (window.opener) {
+                    window.close();
+                } else {
+                    // Если не можем закрыть, показываем сообщение
+                    document.querySelector('.auto-close').textContent = 'Вы можете закрыть это окно вручную';
+                }
+            }
+        }, 1000);
+        
+        // Также закрываем при клике вне контейнера
+        document.body.addEventListener('click', function(e) {
+            if (e.target === document.body) {
+                if (window.opener) {
+                    window.close();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
